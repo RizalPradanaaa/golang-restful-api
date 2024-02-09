@@ -14,6 +14,12 @@ type CategoryControllerImpl struct {
 	CategoryService service.CategoryService
 }
 
+func NewCategoryController(categoryService service.CategoryService) CategoryController {
+	return &CategoryControllerImpl{
+		CategoryService: categoryService,
+	}
+}
+
 func (controller *CategoryControllerImpl) Create(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	// membaca request body
 	categoryCreateRequest := web.CategoryCreateRequest{}
@@ -32,15 +38,13 @@ func (controller *CategoryControllerImpl) Create(writer http.ResponseWriter, req
 }
 
 func (controller *CategoryControllerImpl) Update(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
-	// membaca request body
 	categoryUpdateRequest := web.CategoryUpdateRequest{}
 	helper.ReadFromRequestBody(request, &categoryUpdateRequest)
 
-	// Ambil Id dari paramater
 	categoryId := params.ByName("categoryId")
-	// Konversi ke int
 	id, err := strconv.Atoi(categoryId)
 	helper.PanicIfError(err)
+
 	categoryUpdateRequest.Id = id
 
 	categoryResponse := controller.CategoryService.Update(request.Context(), categoryUpdateRequest)
@@ -50,7 +54,6 @@ func (controller *CategoryControllerImpl) Update(writer http.ResponseWriter, req
 		Data:   categoryResponse,
 	}
 
-	// Mengubah response ke json
 	helper.WriteToResponseBody(writer, webResponse)
 }
 
