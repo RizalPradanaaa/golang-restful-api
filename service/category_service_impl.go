@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"database/sql"
+	"golang-restful-api/exception"
 	"golang-restful-api/helper"
 	"golang-restful-api/model/domain"
 	"golang-restful-api/model/web"
@@ -40,7 +41,7 @@ func (service *CategoryServiceImpl) Create(ctx context.Context, request web.Cate
 		Name: request.Name,
 	}
 
-	service.CategoryRepository.Save(ctx, tx, category)
+	category = service.CategoryRepository.Save(ctx, tx, category)
 
 	return helper.ToCategoryResponse(category)
 }
@@ -57,7 +58,9 @@ func (service *CategoryServiceImpl) Update(ctx context.Context, request web.Cate
 
 	// Cek data id dahulu
 	category, err := service.CategoryRepository.FindById(ctx, tx, request.Id)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	// set data name
 	category.Name = request.Name
@@ -75,7 +78,9 @@ func (service *CategoryServiceImpl) Delete(ctx context.Context, categoryId int) 
 
 	// Cek data id dahulu
 	category, err := service.CategoryRepository.FindById(ctx, tx, categoryId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	service.CategoryRepository.Delete(ctx, tx, category)
 }
@@ -86,8 +91,11 @@ func (service *CategoryServiceImpl) FindById(ctx context.Context, categotyId int
 	helper.PanicIfError(err)
 	defer helper.CommitOrRollback(tx)
 
+	// Cek data id dahulu
 	category, err := service.CategoryRepository.FindById(ctx, tx, categotyId)
-	helper.PanicIfError(err)
+	if err != nil {
+		panic(exception.NewNotFoundError(err.Error()))
+	}
 
 	return helper.ToCategoryResponse(category)
 }
