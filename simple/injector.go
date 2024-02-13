@@ -23,3 +23,20 @@ func InitializedFooBarService() *FooBarService {
 	wire.Build(fooSet, barSet, NewFooBarService)
 	return nil
 }
+
+var helloSet = wire.NewSet(
+	NewSayHelloImpl,
+	wire.Bind(new(SayHello), new(*SayHelloImpl)),
+	// siapapun yang membutuhkan sayHello, akan diberi sayHelloImpl
+)
+
+// Kode Salah
+// func InitializedSayHelloervice() *HelloService {
+// 	wire.Build(NewSayHelloImpl, NewSayHelloService)
+// 	return nil
+// }
+
+func InitializedSayHelloervice() *HelloService {
+	wire.Build(helloSet, NewSayHelloService)
+	return nil
+}
