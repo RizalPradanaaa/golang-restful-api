@@ -53,3 +53,13 @@ func InitializedFooBar() *FooBar {
 	)
 	return nil
 }
+
+var fooBarValueSet = wire.NewSet(
+	wire.Value(&Foo{}),
+	wire.Value(&Bar{}),
+)
+
+func InitializedFooBarUsingValue() *FooBar {
+	wire.Build(fooBarValueSet, wire.Struct(new(FooBar), "*"))
+	return nil
+}
