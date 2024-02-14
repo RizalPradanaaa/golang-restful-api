@@ -4,6 +4,9 @@
 package simple
 
 import (
+	"io"
+	"os"
+
 	"github.com/google/wire"
 )
 
@@ -61,5 +64,10 @@ var fooBarValueSet = wire.NewSet(
 
 func InitializedFooBarUsingValue() *FooBar {
 	wire.Build(fooBarValueSet, wire.Struct(new(FooBar), "*"))
+	return nil
+}
+
+func InitializedReader() io.Reader {
+	wire.Build(wire.InterfaceValue(new(io.Reader), os.Stdin))
 	return nil
 }
